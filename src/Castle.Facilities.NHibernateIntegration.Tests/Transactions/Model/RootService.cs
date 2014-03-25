@@ -156,5 +156,13 @@ namespace Castle.Facilities.NHibernateIntegration.Tests.Transactions
 				throw new InvalidOperationException("Nah, giving up");
 			}
 		}
+
+		public void SessionNotFlushedWithTransactionNested()
+		{
+			using (SessionManager.OpenSession())
+			{
+				firstDao.Create("impossible", true);
+			}
+		}
 	}
 }

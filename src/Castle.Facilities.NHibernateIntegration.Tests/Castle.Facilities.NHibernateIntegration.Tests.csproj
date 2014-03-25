@@ -223,6 +223,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Configuration\TestConfigurationBuilder.cs" />
+    <Compile Include="Transactions\BugsTestCase.cs" />
     <Compile Include="Transactions\DistributedTransactionsTestCase.cs">
       <SubType>Code</SubType>
     </Compile>

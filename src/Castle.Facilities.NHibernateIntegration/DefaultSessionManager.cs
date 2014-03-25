@@ -220,28 +220,8 @@ namespace Castle.Facilities.NHibernateIntegration
 				transaction.Inner.EnlistVolatile(ue, EnlistmentOptions.EnlistDuringPrepareRequired);
 			}
 				
-
 			return true;
 		}
-
-		//private static IsolationLevel TranslateIsolationLevel(IsolationMode mode)
-		//{
-		//    switch (mode)
-		//    {
-		//        case IsolationMode.Chaos:
-		//            return IsolationLevel.Chaos;
-		//        case IsolationMode.ReadCommitted:
-		//            return IsolationLevel.ReadCommitted;
-		//        case IsolationMode.ReadUncommitted:
-		//            return IsolationLevel.ReadUncommitted;
-		//        case IsolationMode.RepeatableRead:
-		//            return IsolationLevel.RepeatableRead;
-		//        case IsolationMode.Serializable:
-		//            return IsolationLevel.Serializable;
-		//        default:
-		//            return IsolationLevel.Unspecified;
-		//    }
-		//}
 
 		private ITransaction ObtainCurrentTransaction()
 		{
@@ -316,7 +296,7 @@ namespace Castle.Facilities.NHibernateIntegration
 			private readonly Action callback;
 
 			private readonly ILogger logger;
-			private string id;
+			private readonly string id;
 
 			public UnregisterEnlistment(ILogger logger, Action callback, ITransaction transaction)
 			{

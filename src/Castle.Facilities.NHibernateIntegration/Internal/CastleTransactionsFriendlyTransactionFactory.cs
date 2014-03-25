@@ -114,7 +114,7 @@ namespace Castle.Facilities.NHibernateIntegration.Internal
 
 				nhtx =  session.ConnectionManager.Transaction;
 				
-				AmbientTransation = transaction;
+				AmbientTransation = transaction.Clone();
 				IsInActiveTransaction = true;
 			}
 
@@ -130,7 +130,7 @@ namespace Castle.Facilities.NHibernateIntegration.Internal
 				{
 					try
 					{
-						//using (var tx = new TransactionScope(AmbientTransation))
+						using (var tx = new TransactionScope(AmbientTransation))
 						{
 							session.BeforeTransactionCompletion(null);
 							if (session.FlushMode != FlushMode.Never && session.ConnectionManager.IsConnected)
@@ -143,7 +143,7 @@ namespace Castle.Facilities.NHibernateIntegration.Internal
 							}
 							logger.Debug("prepared for DTC transaction " + AmbientTransation.TransactionInformation.LocalIdentifier);
 
-							//tx.Complete();
+							tx.Complete();
 						}
 						preparingEnlistment.Prepared();
 					}
@@ -225,8 +225,8 @@ namespace Castle.Facilities.NHibernateIntegration.Internal
 
 			public void Dispose()
 			{
-				//if (AmbientTransation != null)
-				//    AmbientTransation.Dispose();
+				if (AmbientTransation != null)
+				    AmbientTransation.Dispose();
 			}
 		}
 	}

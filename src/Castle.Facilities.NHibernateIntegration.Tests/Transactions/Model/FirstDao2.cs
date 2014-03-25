@@ -50,6 +50,20 @@ namespace Castle.Facilities.NHibernateIntegration.Tests.Transactions
 		}
 
 		[Transaction]
+		public virtual Blog Create(int num)
+		{
+			using (ISession session = sessManager.OpenSession())
+			{
+				NUnit.Framework.Assert.IsTrue(session.Transaction.IsActive);
+
+				var blog = new Blog();
+				blog.Name = (num++).ToString();
+				session.Save(blog);
+				return blog;
+			}
+		}
+
+		[Transaction]
 		public virtual Blog CreateStateless()
 		{
 			return Create("xbox blog");

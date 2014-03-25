@@ -149,6 +149,8 @@
     <Compile Include="Components\Web\SessionWebModule.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Internal\AdoBoundTransaction.cs" />
+    <Compile Include="Internal\CastleFriendlyScopelessTxFactory.cs" />
     <Compile Include="Internal\CastleTransactionsFriendlyTransactionFactory.cs" />
     <Compile Include="Internal\NHTransaction.cs" />
     <Compile Include="Internal\StatelessSessionDelegate.cs" />

@@ -18,6 +18,7 @@ namespace Castle.Facilities.NHibernateIntegration.SessionStores
 {
 	using System;
 	using System.Collections;
+	using Core.Logging;
 	using NHibernate;
 
 	/// <summary>
@@ -25,6 +26,17 @@ namespace Castle.Facilities.NHibernateIntegration.SessionStores
 	/// </summary>
 	public abstract class AbstractSessionStore : MarshalByRefObject, ISessionStore
 	{
+		private ILogger logger = NullLogger.Instance;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public ILogger Logger
+		{
+			get { return logger; }
+			set { logger = value; }
+		}
+
 		/// <summary>
 		/// Gets the stack of <see cref="SessionDelegate"/> objects for the specified <paramref name="alias"/>.
 		/// </summary>
@@ -86,8 +98,14 @@ namespace Castle.Facilities.NHibernateIntegration.SessionStores
 
 			if (session != current)
 			{
-				throw new InvalidProgramException("AbstractSessionStore.Remove tried to " +
-				                                  "remove a session which is not on the top or not in the stack at all");
+				//throw new InvalidProgramException("AbstractSessionStore.Remove tried to " +
+				//                                  "remove a session which is not on the top or not in the stack at all");
+
+				var s = session.GetSessionImplementation().SessionId;
+				var c = current.GetSessionImplementation().SessionId;
+
+				logger.WarnFormat("Session requested for removal is not the top one. If it isn't a race caused by the .net tx async rollback, you're doing something wrong." +
+				            "Expected {0}. Found: {1}", s, c);
 			}
 
 			stack.Pop();

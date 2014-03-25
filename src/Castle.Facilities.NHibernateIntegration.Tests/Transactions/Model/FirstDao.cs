@@ -36,7 +36,7 @@ namespace Castle.Facilities.NHibernateIntegration.Tests.Transactions
 		}
 
 		[Transaction]
-		public virtual Blog Create(String name)
+		public virtual Blog Create(String name, bool shouldThrow = false)
 		{
 			using (ISession session = sessManager.OpenSession())
 			{
@@ -45,6 +45,30 @@ namespace Castle.Facilities.NHibernateIntegration.Tests.Transactions
 				var blog = new Blog();
 				blog.Name = name;
 				session.Save(blog);
+
+				if (shouldThrow)
+					throw new ArithmeticException("Error");
+
+				return blog;
+			}
+		}
+
+		[Transaction]
+		public virtual Blog CreatEx(String name, bool shouldThrow = false)
+		{
+			Create();
+
+			using (ISession session = sessManager.OpenSession())
+			{
+				NUnit.Framework.Assert.IsTrue(session.Transaction.IsActive);
+
+				var blog = new Blog();
+				blog.Name = name;
+				session.Save(blog);
+
+				if (shouldThrow)
+					throw new ArithmeticException("Error");
+
 				return blog;
 			}
 		}
