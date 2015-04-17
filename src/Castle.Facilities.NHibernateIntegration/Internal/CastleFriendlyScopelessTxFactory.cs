@@ -11,6 +11,8 @@
 	using NHibernate.Exceptions;
 	using NHibernate.Impl;
 	using NHibernate.Transaction;
+	using StatsdClient;
+	using StatsdClient.Configuration;
 
 	public class CastleFriendlyScopelessTxFactory : ITransactionFactory
 	{
@@ -38,8 +40,9 @@
 			var transactionContext = new DistributedTransactionContext(session);
 			session.TransactionContext = transactionContext;
 
-			logger.DebugFormat("Enlisted into ambient transaction: {0}. Id: {1}.", ambientTx.IsolationLevel, 
-				ambientTx.TransactionInformation.LocalIdentifier);
+			if (logger.IsDebugEnabled)
+				logger.DebugFormat("Enlisted into ambient transaction: {0}. Id: {1}.", ambientTx.IsolationLevel, 
+					ambientTx.TransactionInformation.LocalIdentifier);
 
 			session.AfterTransactionBegin(null);
 
@@ -65,7 +68,8 @@
 
 		public void ExecuteWorkInIsolation(ISessionImplementor session, IIsolatedWork work, bool transacted)
 		{
-			logger.Debug("ExecuteWorkInIsolation Session: " + session.SessionId);
+			if (logger.IsDebugEnabled)
+				logger.Debug("ExecuteWorkInIsolation Session: " + session.SessionId);
 
 			IDbConnection connection = null;
 			IDbTransaction trans = null;
@@ -127,6 +131,7 @@
 		{
 			private readonly ISessionImplementor session;
 			private readonly AdoBoundTransaction nhtx;
+			private readonly Stopwatch stopwatch = new Stopwatch(); 
 
 			public bool IsInActiveTransaction;
 			
@@ -147,11 +152,14 @@
 
 			void IEnlistmentNotification.Prepare(PreparingEnlistment preparingEnlistment)
 			{
+				stopwatch.Start();
+
 				using (new SessionIdLoggingContext(session.SessionId))
 				{
 					try
 					{
-						logger.Debug("Preparing NHibernate resource");
+						if (logger.IsDebugEnabled)
+							logger.Debug("Preparing NHibernate resource");
 
 						nhtx.Prepare();
 						
@@ -172,15 +180,22 @@
 
 				using (new SessionIdLoggingContext(session.SessionId))
 				{
-					logger.Debug("Committing NHibernate resource");
+					if (logger.IsDebugEnabled)
+						logger.Debug("Committing NHibernate resource");
 					
 					nhtx.Commit();
 					End(true);
 					
-					enlistment.Done();
-
-					IsInActiveTransaction = false;
+					Done(enlistment);
 				}
+			}
+
+			private void Done(Enlistment enlistment)
+			{
+				enlistment.Done();
+				IsInActiveTransaction = false;
+
+				PostMetric();
 			}
 
 			void IEnlistmentNotification.Rollback(Enlistment enlistment)
@@ -190,14 +205,13 @@
 				using (new SessionIdLoggingContext(session.SessionId))
 				{
 					//session.AfterTransactionCompletion(false, null);
-					logger.Debug("Rolled back NHibernate resource");
+					if (logger.IsDebugEnabled)
+						logger.Debug("Rolled back NHibernate resource");
 
 					nhtx.Rollback();
 					End(false);
 					
-					enlistment.Done();
-					
-					IsInActiveTransaction = false;
+					Done(enlistment);
 				}
 			}
 
@@ -206,13 +220,21 @@
 				using (new SessionIdLoggingContext(session.SessionId))
 				{
 					session.AfterTransactionCompletion(false, null);
-					logger.Debug("NHibernate resource is in doubt");
+					
+					if (logger.IsDebugEnabled)
+						logger.Debug("NHibernate resource is in doubt");
 					
 					End(false);
 					
-					enlistment.Done();
-					IsInActiveTransaction = false;
+					Done(enlistment);
 				}
+			}
+
+			private void PostMetric()
+			{
+				stopwatch.Stop();
+
+				new MetricsTimer(Naming.withEnvironmentApplicationAndHostname("nhibernate.tx.flush"), payload: stopwatch.ElapsedMilliseconds()).Dispose();
 			}
 
 			void End(bool wasSuccessful)

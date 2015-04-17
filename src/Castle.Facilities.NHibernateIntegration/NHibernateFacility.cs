@@ -405,6 +405,12 @@ namespace Castle.Facilities.NHibernateIntegration
             facilitySettingConfig.IsWeb();
             return this;
         }
+
+		public NHibernateFacility SessionStore(Type type)
+        {
+            facilitySettingConfig.SessionStore(type);
+            return this;
+        }
         #endregion
 	}
 

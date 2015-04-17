@@ -47,7 +47,7 @@
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
     <OldToolsVersion>3.5</OldToolsVersion>
     <IsWebBootstrapper>true</IsWebBootstrapper>
   </PropertyGroup>
@@ -123,6 +123,12 @@
       <Name>NHibernate</Name>
       <HintPath>..\..\lib\$(BuildConfigKey)\NHibernate.dll</HintPath>
     </Reference>
+    <Reference Include="StatsdClient">
+      <HintPath>..\..\lib\net40\StatsdClient.dll</HintPath>
+    </Reference>
+    <Reference Include="StatsdClient.Configuration">
+      <HintPath>..\..\lib\net40\StatsdClient.Configuration.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -154,6 +160,7 @@
     <Compile Include="Internal\CastleTransactionsFriendlyTransactionFactory.cs" />
     <Compile Include="Internal\NHTransaction.cs" />
     <Compile Include="Internal\StatelessSessionDelegate.cs" />
+    <Compile Include="SessionStores\HybridSessionStore.cs" />
     <Compile Include="Util\FieldInfoCollection.cs">
       <SubType>Code</SubType>
     </Compile>
