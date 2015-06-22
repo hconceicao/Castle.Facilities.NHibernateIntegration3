@@ -27,5 +27,7 @@ namespace Castle.Facilities.NHibernateIntegration.Tests.Issues.Facilities119
 			cfg.SetProperty("test", "test3");
 			return cfg;
 		}
+
+		public NHibernateFactoryConfiguration[] Factories { get; set; }
 	}
 }

@@ -16,6 +16,7 @@
 #endregion
 namespace Castle.Facilities.NHibernateIntegration
 {
+	using System.Collections.Generic;
 	using Core.Configuration;
 	using NHibernate.Cfg;
 
@@ -28,5 +29,7 @@ namespace Castle.Facilities.NHibernateIntegration
 		/// Builds the Configuration object from the specifed configuration
 		/// </summary>
 		Configuration GetConfiguration(IConfiguration config);
+
+		NHibernateFactoryConfiguration[] Factories { get; set; }
 	}
 }

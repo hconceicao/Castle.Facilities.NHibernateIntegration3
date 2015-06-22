@@ -31,6 +31,11 @@ namespace Castle.Facilities.NHibernateIntegration.Builders
 	{
 		private const String NHMappingAttributesAssemblyName = "NHibernate.Mapping.Attributes";
 
+		public DefaultConfigurationBuilder()
+		{
+			Factories = new NHibernateFactoryConfiguration[0];
+		}
+
 		/// <summary>
 		/// Builds the Configuration object from the specifed configuration
 		/// </summary>
@@ -46,6 +51,8 @@ namespace Castle.Facilities.NHibernateIntegration.Builders
 			RegisterListeners(cfg, config.Children["listeners"]);
 			return cfg;
 		}
+
+		public NHibernateFactoryConfiguration[] Factories { get; set; }
 
 		/// <summary>
 		/// Applies the configuration settings.

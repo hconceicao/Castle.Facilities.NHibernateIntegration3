@@ -246,12 +246,11 @@ namespace Castle.Facilities.NHibernateIntegration
 
 		    ConfigureReflectionOptimizer();
 
-		    bool firstFactory = true;
+			var configBuilder = Kernel.Resolve<IConfigurationBuilder>();
 
-            foreach (var factoryConfig in facilitySettingConfig.Factories)
+            foreach (var factoryConfig in configBuilder.Factories ?? facilitySettingConfig.Factories)
 		    {
-		        ConfigureFactories(factoryConfig, sessionFactoryResolver, firstFactory);
-		        firstFactory = false;
+		        ConfigureFactories(factoryConfig, sessionFactoryResolver, configBuilder);
 		    }
 		}
 
@@ -275,10 +274,10 @@ namespace Castle.Facilities.NHibernateIntegration
 		/// </summary>
 		/// <param name="config">The config.</param>
 		/// <param name="sessionFactoryResolver">The session factory resolver.</param>
-		/// <param name="firstFactory">if set to <c>true</c> [first factory].</param>
-		protected void ConfigureFactories(NHibernateFactoryConfiguration config, ISessionFactoryResolver sessionFactoryResolver, bool firstFactory)
+		/// <param name="configBuilder"></param>
+		protected void ConfigureFactories(NHibernateFactoryConfiguration config, ISessionFactoryResolver sessionFactoryResolver, IConfigurationBuilder configBuilder)
 		{
-			String id = config.Id;
+			var id = config.Id;
 
 			if (string.IsNullOrEmpty(id))
 			{
@@ -289,36 +288,7 @@ namespace Castle.Facilities.NHibernateIntegration
 				throw new ConfigurationErrorsException(message);
 			}
 
-			String alias = config.Alias;
-
-			if (!firstFactory && (string.IsNullOrEmpty(alias)))
-			{
-				const string message = "You must provide a " +
-				                       "valid 'alias' attribute for the 'factory' node. This id is used to obtain " +
-				                       "the ISession implementation from the SessionManager";
-
-				throw new ConfigurationErrorsException(message);
-			}
-
-			if (string.IsNullOrEmpty(alias))
-			{
-				alias = Constants.DefaultAlias;
-			}
-
-            string configurationBuilderType = config.ConfigurationBuilderType;
-			string configurationbuilderKey = string.Format(ConfigurationBuilderForFactoryFormat, id);
-			IConfigurationBuilder configBuilder;
-			if (string.IsNullOrEmpty(configurationBuilderType))
-			{
-				configBuilder = Kernel.Resolve<IConfigurationBuilder>();
-			}
-			else
-			{
-				Kernel.Register(
-					Component.For<IConfigurationBuilder>().ImplementedBy(Type.GetType(configurationBuilderType)).Named(
-						configurationbuilderKey));
-				configBuilder = Kernel.Resolve<IConfigurationBuilder>(configurationbuilderKey);
-			}
+			var alias = config.Alias ?? Constants.DefaultAlias;
 
             var cfg = configBuilder.GetConfiguration(config.GetConfiguration());
 
@@ -642,7 +612,5 @@ namespace Castle.Facilities.NHibernateIntegration
         {
             return config;
         }
-
-
     }
 }

@@ -30,6 +30,8 @@ namespace Castle.Facilities.NHibernateIntegration.Tests.Issues.Facilities119
 			return cfg;
 		}
 
+		public NHibernateFactoryConfiguration[] Factories { get; set; }
+
 		#endregion
 	}
 }

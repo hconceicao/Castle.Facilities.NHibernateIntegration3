@@ -27,6 +27,11 @@ namespace Castle.Facilities.NHibernateIntegration.Builders
 	/// </summary>
 	public class XmlConfigurationBuilder : IConfigurationBuilder
 	{
+		public XmlConfigurationBuilder()
+		{
+			Factories = new NHibernateFactoryConfiguration[0];
+		}
+
 		#region IConfigurationBuilder Members
 
 		/// <summary>
@@ -47,6 +52,8 @@ namespace Castle.Facilities.NHibernateIntegration.Builders
 			configResource.Dispose();
 			return cfg;
 		}
+
+		public NHibernateFactoryConfiguration[] Factories { get; set; }
 
 		#endregion
 	}

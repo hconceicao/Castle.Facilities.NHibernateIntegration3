@@ -56,6 +56,8 @@ namespace Castle.Facilities.NHibernateIntegration.Tests.Configuration
 			return nhConfig;
 		}
 
+		public NHibernateFactoryConfiguration[] Factories { get; set; }
+
 		#endregion
 	}
 

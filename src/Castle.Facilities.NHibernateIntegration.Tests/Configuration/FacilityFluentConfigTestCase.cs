@@ -65,5 +65,7 @@ namespace Castle.Facilities.NHibernateIntegration.Tests.Configuration
         {
             return new NHibernate.Cfg.Configuration();
         }
+
+	    public NHibernateFactoryConfiguration[] Factories { get; set; }
     }
 }
