@@ -108,17 +108,22 @@ namespace Castle.Facilities.NHibernateIntegration
 			{
 				var session = CreateSession(alias);
 
-				Logger.Info("Created Session " + session.GetSessionImplementation().SessionId);
+				if (Logger.IsDebugEnabled)
+					Logger.Debug("Created Session = [" + session.GetSessionImplementation().SessionId + "]");
 
 				wrapped = WrapSession(transaction == null, session);
 				EnlistIfNecessary(true, transaction, wrapped);
 
 				sessionStore.Store(alias, wrapped);
 
-				Logger.Info("Wrapped Session " + session.GetSessionImplementation().SessionId);
+				if (Logger.IsDebugEnabled)
+					Logger.Debug("Wrapped Session = [" + wrapped.GetSessionImplementation().SessionId + "]");
 			}
 			else
 			{
+				if (Logger.IsDebugEnabled)
+					Logger.Debug("Restored Session = [" + wrapped.GetSessionImplementation().SessionId + "]");
+
 				wrapped = WrapSession(false, wrapped.InnerSession);
 				EnlistIfNecessary(false, transaction, wrapped);
 			}
@@ -180,17 +185,17 @@ namespace Castle.Facilities.NHibernateIntegration
 		{
 			if (transaction == null)
 			{
-				Logger.Info("Tx not found. Nothing to do here.");
+				Logger.Debug("Tx not found. Nothing to do here.");
 
 				return false;
 			}
 
-			Logger.InfoFormat("Enlistment status. Session: {0}. Tx IsActive: {1}. Are we Session Owner: {2}", 
+			Logger.DebugFormat("Enlistment status. Session: {0}. Tx IsActive: {1}. Are we Session Owner: {2}", 
 				session.GetSessionImplementation().SessionId, session.Transaction.IsActive, weAreSessionOwner);
 
 			if (weAreSessionOwner && session.Transaction.IsActive)
 			{
-				Logger.Info("Enlisted Session " + session.GetSessionImplementation().SessionId);
+				Logger.Debug("Enlisted Session " + session.GetSessionImplementation().SessionId);
 
 				var ue = new UnregisterEnlistment(Logger, session.UnregisterFromStore, transaction);
 
@@ -303,7 +308,8 @@ namespace Castle.Facilities.NHibernateIntegration
 				this.callback = callback;
 				id = transaction.Inner.TransactionInformation.LocalIdentifier;
 
-				logger.Info("Enlisted to undertake " + id);
+				if (logger.IsDebugEnabled)
+					logger.Debug("Enlisted to undertake " + id);
 
 				this.logger = logger;
 			}
@@ -312,7 +318,8 @@ namespace Castle.Facilities.NHibernateIntegration
 			{
 				try
 				{
-					logger.Info("Undertake started " + id);
+					if (logger.IsDebugEnabled)
+						logger.Debug("Undertake started " + id);
 
 					callback();
 				}
@@ -324,7 +331,8 @@ namespace Castle.Facilities.NHibernateIntegration
 
 			public void Prepare(PreparingEnlistment preparingEnlistment)
 			{
-				logger.Info("ue p");
+				if (logger.IsDebugEnabled)
+					logger.Debug("ue p");
 
 				Undertaker();
 

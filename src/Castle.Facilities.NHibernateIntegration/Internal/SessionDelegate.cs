@@ -34,6 +34,8 @@ namespace Castle.Facilities.NHibernateIntegration
 	[Serializable]
 	public class SessionDelegate : MarshalByRefObject, ISession
 	{
+		private static log4net.ILog logger = log4net.LogManager.GetLogger(typeof (SessionDelegate));
+
 		private readonly ISession inner;
 		private readonly ISessionStore sessionStore;
 		private readonly bool canClose;
@@ -1329,6 +1331,9 @@ namespace Castle.Facilities.NHibernateIntegration
 		/// </summary>
 		public void Dispose()
 		{
+			if (logger.IsDebugEnabled)
+				logger.Debug("Disposing Session = [" + GetSessionImplementation().SessionId + "]");
+
 			DoClose(false);
 		}
 
