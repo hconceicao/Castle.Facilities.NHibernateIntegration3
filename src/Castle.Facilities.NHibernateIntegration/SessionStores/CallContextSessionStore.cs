@@ -31,7 +31,7 @@ namespace Castle.Facilities.NHibernateIntegration.SessionStores
 		/// <returns></returns>
 		protected override IDictionary GetDictionary()
 		{
-			return CallContext.GetData(SlotKey) as IDictionary;
+			return CallContext.LogicalGetData(SlotKey) as IDictionary;
 		}
 
 		/// <summary>
@@ -40,7 +40,7 @@ namespace Castle.Facilities.NHibernateIntegration.SessionStores
 		/// <param name="dictionary">The dictionary.</param>
 		protected override void StoreDictionary(IDictionary dictionary)
 		{
-			CallContext.SetData(SlotKey, dictionary);
+			CallContext.LogicalSetData(SlotKey, dictionary);
 		}
 
 		/// <summary>
@@ -49,7 +49,7 @@ namespace Castle.Facilities.NHibernateIntegration.SessionStores
 		/// <returns>A dictionary.</returns>
 		protected override IDictionary GetStatelessSessionDictionary()
 		{
-			return CallContext.GetData(StatelessSessionSlotKey) as IDictionary;
+			return CallContext.LogicalGetData(StatelessSessionSlotKey) as IDictionary;
 		}
 
 		/// <summary>
@@ -58,7 +58,7 @@ namespace Castle.Facilities.NHibernateIntegration.SessionStores
 		/// <param name="dictionary">The dictionary.</param>
 		protected override void StoreStatelessSessionDictionary(IDictionary dictionary)
 		{
-			CallContext.SetData(StatelessSessionSlotKey, dictionary);
+			CallContext.LogicalSetData(StatelessSessionSlotKey, dictionary);
 		}
 	}
 }

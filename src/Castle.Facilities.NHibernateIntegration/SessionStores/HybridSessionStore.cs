@@ -10,14 +10,14 @@
 		protected override IDictionary GetDictionary()
 		{
 			return IsNonWeb()
-				? CallContext.GetData(SlotKey) as IDictionary
+				? CallContext.LogicalGetData(SlotKey) as IDictionary
 				: ObtainSessionContext().Items[SlotKey] as IDictionary;
 		}
 
 		protected override void StoreDictionary(IDictionary dictionary)
 		{
 			if (IsNonWeb())
-				CallContext.SetData(SlotKey, dictionary);
+				CallContext.LogicalSetData(SlotKey, dictionary);
 			else
 				ObtainSessionContext().Items[SlotKey] = dictionary;
 		}
@@ -25,14 +25,14 @@
 		protected override IDictionary GetStatelessSessionDictionary()
 		{
 			return IsNonWeb()
-				? CallContext.GetData(StatelessSessionSlotKey) as IDictionary
+				? CallContext.LogicalGetData(StatelessSessionSlotKey) as IDictionary
 				: ObtainSessionContext().Items[StatelessSessionSlotKey] as IDictionary;
 		}
 
 		protected override void StoreStatelessSessionDictionary(IDictionary dictionary)
 		{
 			if (IsNonWeb())
-				CallContext.SetData(StatelessSessionSlotKey, dictionary);
+				CallContext.LogicalSetData(StatelessSessionSlotKey, dictionary);
 			else
 				ObtainSessionContext().Items[StatelessSessionSlotKey] = dictionary;
 		}
