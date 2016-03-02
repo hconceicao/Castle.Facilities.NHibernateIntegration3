@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
   <!-- Root Path definition relative for actual build file -->
   <PropertyGroup>
     <RootPath Condition=" '$(RootPath)' == '' ">$(MSBuildProjectDirectory)\..\..</RootPath>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <PublishUrl>http://localhost/Castle.Facilities.NHibernateIntegration/</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
@@ -72,6 +72,7 @@
     <DebugType>full</DebugType>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -85,7 +86,7 @@
     <DebugSymbols>true</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
-    <NoWarn>0618;3001</NoWarn>
+    <NoWarn>0618;3001;1591</NoWarn>
     <Optimize>true</Optimize>
     <RegisterForComInterop>false</RegisterForComInterop>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
@@ -94,6 +95,7 @@
     <DebugType>pdbonly</DebugType>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Castle.Core">
@@ -103,9 +105,9 @@
     <Reference Include="Castle.Facilities.AutoTx">
       <HintPath>..\..\lib\net40\Castle.Facilities.AutoTx.dll</HintPath>
     </Reference>
-    <Reference Include="Castle.Services.Transaction">
-      <Name>Castle.Services.Transaction</Name>
-      <HintPath>..\..\lib\$(BuildConfigKey)\Castle.Services.Transaction.dll</HintPath>
+    <Reference Include="Castle.Services.Transaction, Version=3.0.202.36320, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net40\Castle.Services.Transaction.dll</HintPath>
     </Reference>
     <Reference Include="Castle.Windsor">
       <Name>Castle.Windsor</Name>

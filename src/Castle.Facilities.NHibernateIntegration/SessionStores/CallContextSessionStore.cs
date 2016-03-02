@@ -16,8 +16,11 @@
 #endregion
 namespace Castle.Facilities.NHibernateIntegration.SessionStores
 {
+	using System;
 	using System.Collections;
 	using System.Runtime.Remoting.Messaging;
+	using Core.Logging;
+	using Services.Transaction;
 
 	/// <summary>
 	/// Provides an implementation of <see cref="ISessionStore"/>
@@ -31,7 +34,26 @@ namespace Castle.Facilities.NHibernateIntegration.SessionStores
 		/// <returns></returns>
 		protected override IDictionary GetDictionary()
 		{
-			return CallContext.LogicalGetData(SlotKey) as IDictionary;
+			var name = SlotKey;
+
+			return GetDictionary(name, Logger);
+		}
+
+		internal static IDictionary GetDictionary(string name, ILogger log = null)
+		{
+			var txctx = TransactionCallContext.Get();
+
+			if (txctx != null)
+			{
+				(log ?? NullLogger.Instance).Info("TxCtx = " + txctx.Id);
+
+				object store;
+				txctx.TryGetValue(name, out store);
+
+				return store as IDictionary;
+			}
+			else
+				return CallContext.LogicalGetData(name) as IDictionary;
 		}
 
 		/// <summary>
@@ -40,7 +62,19 @@ namespace Castle.Facilities.NHibernateIntegration.SessionStores
 		/// <param name="dictionary">The dictionary.</param>
 		protected override void StoreDictionary(IDictionary dictionary)
 		{
-			CallContext.LogicalSetData(SlotKey, dictionary);
+			var key = SlotKey;
+
+			StoreDictionary(dictionary, key);
+		}
+
+		internal static void StoreDictionary(IDictionary dictionary, string key)
+		{
+			var txctx = TransactionCallContext.Get();
+
+			if (txctx != null)
+				txctx[key] = dictionary;
+			else
+				CallContext.LogicalSetData(key, dictionary);
 		}
 
 		/// <summary>
@@ -49,7 +83,7 @@ namespace Castle.Facilities.NHibernateIntegration.SessionStores
 		/// <returns>A dictionary.</returns>
 		protected override IDictionary GetStatelessSessionDictionary()
 		{
-			return CallContext.LogicalGetData(StatelessSessionSlotKey) as IDictionary;
+			return GetDictionary(StatelessSessionSlotKey);
 		}
 
 		/// <summary>
@@ -58,7 +92,19 @@ namespace Castle.Facilities.NHibernateIntegration.SessionStores
 		/// <param name="dictionary">The dictionary.</param>
 		protected override void StoreStatelessSessionDictionary(IDictionary dictionary)
 		{
-			CallContext.LogicalSetData(StatelessSessionSlotKey, dictionary);
+			var statelessSessionSlotKey = StatelessSessionSlotKey;
+
+			StoreStatelessSessionDictionary(dictionary, statelessSessionSlotKey);
+		}
+
+		internal static void StoreStatelessSessionDictionary(IDictionary dictionary, string statelessSessionSlotKey)
+		{
+			var txctx = TransactionCallContext.Get();
+
+			if (txctx != null)
+				txctx[statelessSessionSlotKey] = dictionary;
+			else
+				CallContext.LogicalSetData(statelessSessionSlotKey, dictionary);
 		}
 	}
 }

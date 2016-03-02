@@ -584,11 +584,6 @@
             being disposed.
             </remarks>
         </member>
-        <member name="P:Castle.Services.Transaction.ITransaction.DataContext">
-            <summary>
-            	Holds data in a key/pair fashion relevant to the transaction.
-            </summary>
-        </member>
         <member name="M:Castle.Services.Transaction.FileTransaction.Castle#Services#Transaction#IDirectoryAdapter#Create(System.String)">
             <summary>
             	Creates a directory at the path given.
