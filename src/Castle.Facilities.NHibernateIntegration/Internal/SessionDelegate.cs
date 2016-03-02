@@ -1355,7 +1355,7 @@ namespace Castle.Facilities.NHibernateIntegration
 			else
 			{
 				// Fuck no, you cannot ever close a session that you dont own
-				// inner.Dispose(); //as nhib calls, soft dispose tx aware.
+				inner.Dispose(); //as nhib calls, soft dispose tx aware.
 			}
 
 			return null;
