@@ -178,7 +178,7 @@
     <Compile Include="SessionStores\AbstractSessionStore.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SessionStores\CallContextSessionStore.cs">
+    <Compile Include="SessionStores\ThreadLocalSessionStore.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Builders\DefaultConfigurationBuilder.cs" />

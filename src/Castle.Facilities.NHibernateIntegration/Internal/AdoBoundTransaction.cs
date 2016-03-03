@@ -176,7 +176,16 @@
 
 				if (session.FlushMode != FlushMode.Never)
 				{
-					session.Flush();
+					try
+					{
+						session.Flush();
+					}
+					catch (Exception e)
+					{
+						log.Error("Error flushing Session: " + session.SessionId, e);
+
+						throw;
+					}
 				}
 			}
 		}

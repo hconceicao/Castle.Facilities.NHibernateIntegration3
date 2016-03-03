@@ -18,7 +18,9 @@ namespace Castle.Facilities.NHibernateIntegration.SessionStores
 {
 	using System;
 	using System.Collections;
+	using System.Collections.Generic;
 	using System.Runtime.Remoting.Messaging;
+	using System.Threading;
 	using Core.Logging;
 	using Services.Transaction;
 
@@ -26,8 +28,11 @@ namespace Castle.Facilities.NHibernateIntegration.SessionStores
 	/// Provides an implementation of <see cref="ISessionStore"/>
 	/// which relies on <c>CallContext</c>
 	/// </summary>
-	public class CallContextSessionStore : AbstractDictStackSessionStore
+	public class ThreadLocalSessionStore : AbstractDictStackSessionStore
 	{
+		private ThreadLocal< Dictionary<string, IDictionary>> stateful = new ThreadLocal< Dictionary<string, IDictionary>>(() => new Dictionary<string, IDictionary>() );
+		private ThreadLocal< Dictionary<string, IDictionary>> stateless = new ThreadLocal< Dictionary<string, IDictionary>>(() => new Dictionary<string, IDictionary>() );
+
 		/// <summary>
 		/// Gets the dictionary.
 		/// </summary>
@@ -36,24 +41,16 @@ namespace Castle.Facilities.NHibernateIntegration.SessionStores
 		{
 			var name = SlotKey;
 
-			return GetDictionary(name, Logger);
+			return GetDictionary(name, stateful);
 		}
 
-		internal static IDictionary GetDictionary(string name, ILogger log = null)
+		internal static IDictionary GetDictionary(string name, ThreadLocal< Dictionary<string, IDictionary>> source)
 		{
-			var txctx = TransactionCallContext.Get();
+			IDictionary dic;
 
-			if (txctx != null)
-			{
-				(log ?? NullLogger.Instance).Info("TxCtx = " + txctx.Id);
+			source.Value.TryGetValue(name, out dic);
 
-				object store;
-				txctx.TryGetValue(name, out store);
-
-				return store as IDictionary;
-			}
-			else
-				return CallContext.LogicalGetData(name) as IDictionary;
+			return dic;
 		}
 
 		/// <summary>
@@ -64,17 +61,12 @@ namespace Castle.Facilities.NHibernateIntegration.SessionStores
 		{
 			var key = SlotKey;
 
-			StoreDictionary(dictionary, key);
+			StoreDictionary(dictionary, key, stateful);
 		}
 
-		internal static void StoreDictionary(IDictionary dictionary, string key)
+		internal static void StoreDictionary(IDictionary dictionary, string key, ThreadLocal< Dictionary<string, IDictionary>> source)
 		{
-			var txctx = TransactionCallContext.Get();
-
-			if (txctx != null)
-				txctx[key] = dictionary;
-			else
-				CallContext.LogicalSetData(key, dictionary);
+			source.Value[key] = dictionary;
 		}
 
 		/// <summary>
@@ -83,7 +75,7 @@ namespace Castle.Facilities.NHibernateIntegration.SessionStores
 		/// <returns>A dictionary.</returns>
 		protected override IDictionary GetStatelessSessionDictionary()
 		{
-			return GetDictionary(StatelessSessionSlotKey);
+			return GetDictionary(StatelessSessionSlotKey, stateless);
 		}
 
 		/// <summary>
@@ -94,17 +86,7 @@ namespace Castle.Facilities.NHibernateIntegration.SessionStores
 		{
 			var statelessSessionSlotKey = StatelessSessionSlotKey;
 
-			StoreStatelessSessionDictionary(dictionary, statelessSessionSlotKey);
-		}
-
-		internal static void StoreStatelessSessionDictionary(IDictionary dictionary, string statelessSessionSlotKey)
-		{
-			var txctx = TransactionCallContext.Get();
-
-			if (txctx != null)
-				txctx[statelessSessionSlotKey] = dictionary;
-			else
-				CallContext.LogicalSetData(statelessSessionSlotKey, dictionary);
+			StoreDictionary(dictionary, statelessSessionSlotKey, stateless);
 		}
 	}
 }

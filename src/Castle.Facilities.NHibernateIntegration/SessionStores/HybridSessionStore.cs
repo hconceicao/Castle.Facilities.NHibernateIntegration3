@@ -1,23 +1,28 @@
 ﻿namespace Castle.Facilities.NHibernateIntegration.SessionStores
 {
 	using System.Collections;
+	using System.Collections.Generic;
 	using System.Runtime.Remoting.Messaging;
+	using System.Threading;
 	using System.Web;
 	using MicroKernel.Facilities;
 
 	public class HybridSessionStore : AbstractDictStackSessionStore
 	{
+		private ThreadLocal< Dictionary<string, IDictionary>> stateful = new ThreadLocal< Dictionary<string, IDictionary>>(() => new Dictionary<string, IDictionary>() );
+		private ThreadLocal< Dictionary<string, IDictionary>> stateless = new ThreadLocal< Dictionary<string, IDictionary>>(() => new Dictionary<string, IDictionary>() );
+
 		protected override IDictionary GetDictionary()
 		{
 			return IsNonWeb()
-				? CallContextSessionStore.GetDictionary(SlotKey, Logger)
+				? ThreadLocalSessionStore.GetDictionary(SlotKey, stateful)
 				: ObtainSessionContext().Items[SlotKey] as IDictionary;
 		}
 
 		protected override void StoreDictionary(IDictionary dictionary)
 		{
 			if (IsNonWeb())
-				CallContextSessionStore.StoreDictionary(dictionary, SlotKey);
+				ThreadLocalSessionStore.StoreDictionary(dictionary, SlotKey, stateful);
 			else
 				ObtainSessionContext().Items[SlotKey] = dictionary;
 		}
@@ -25,14 +30,14 @@
 		protected override IDictionary GetStatelessSessionDictionary()
 		{
 			return IsNonWeb()
-				? CallContextSessionStore.GetDictionary(StatelessSessionSlotKey)
+				? ThreadLocalSessionStore.GetDictionary(StatelessSessionSlotKey, stateless)
 				: ObtainSessionContext().Items[StatelessSessionSlotKey] as IDictionary;
 		}
 
 		protected override void StoreStatelessSessionDictionary(IDictionary dictionary)
 		{
 			if (IsNonWeb())
-				CallContextSessionStore.StoreStatelessSessionDictionary(dictionary, StatelessSessionSlotKey);
+				ThreadLocalSessionStore.StoreDictionary(dictionary, StatelessSessionSlotKey, stateless);
 			else
 				ObtainSessionContext().Items[StatelessSessionSlotKey] = dictionary;
 		}
