@@ -3,7 +3,7 @@
   <!-- Root Path definition relative for actual build file -->
   <PropertyGroup>
     <RootPath Condition=" '$(RootPath)' == '' ">$(MSBuildProjectDirectory)\..\..</RootPath>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <PublishUrl>http://localhost/Castle.Facilities.NHibernateIntegration/</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
@@ -162,6 +162,7 @@
     <Compile Include="Internal\CastleTransactionsFriendlyTransactionFactory.cs" />
     <Compile Include="Internal\NHTransaction.cs" />
     <Compile Include="Internal\StatelessSessionDelegate.cs" />
+    <Compile Include="SessionStores\AsyncLocalSessionStore.cs" />
     <Compile Include="SessionStores\HybridSessionStore.cs" />
     <Compile Include="Util\FieldInfoCollection.cs">
       <SubType>Code</SubType>
