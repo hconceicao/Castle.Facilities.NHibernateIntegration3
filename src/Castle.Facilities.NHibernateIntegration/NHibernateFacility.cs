@@ -145,7 +145,6 @@ namespace Castle.Facilities.NHibernateIntegration
 			VerifyIsTxManagerIsPresent();
 		}
 
-
 		/// <summary>
 		/// Register <see cref="IConfigurationBuilder"/> the default ConfigurationBuilder or (if present) the one 
 		/// specified via "configurationBuilder" attribute.
@@ -554,7 +553,8 @@ namespace Castle.Facilities.NHibernateIntegration
         public Type GetSessionStoreType()
         {
 			// Default implementation
-			Type sessionStoreType = typeof (ThreadLocalSessionStore);
+			// Type sessionStoreType = typeof (ThreadLocalSessionStore);
+			Type sessionStoreType = typeof(AsyncLocalSessionStore);
 
             if (isWeb)
 				sessionStoreType = typeof (WebSessionStore);
