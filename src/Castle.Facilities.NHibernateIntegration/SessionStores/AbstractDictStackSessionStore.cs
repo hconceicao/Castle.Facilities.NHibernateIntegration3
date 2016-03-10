@@ -27,17 +27,21 @@ namespace Castle.Facilities.NHibernateIntegration.SessionStores
 	/// </summary>
 	public abstract class AbstractDictStackSessionStore : AbstractSessionStore
 	{
+		private string slotKey;
+		private string _statelessSessionSlotKey;
+
+		protected AbstractDictStackSessionStore()
+		{
+			slotKey = string.Format("nh.facility.stacks.{0}", Guid.NewGuid());
+			_statelessSessionSlotKey = string.Format("nh.facility.stacks1.{0}", Guid.NewGuid());
+		}
+
 		/// <summary>
 		/// Name used for storage in <see cref="CallContext"/>
 		/// </summary>
 		protected String SlotKey
 		{
-			get
-			{
-				if (string.IsNullOrEmpty(slotKey))
-					slotKey = string.Format("nh.facility.stacks.{0}", Guid.NewGuid());
-				return slotKey;
-			}
+			get { return slotKey; }
 		}
 
 		/// <summary>
@@ -45,16 +49,8 @@ namespace Castle.Facilities.NHibernateIntegration.SessionStores
 		/// </summary>
 		protected String StatelessSessionSlotKey
 		{
-			get
-			{
-				if (string.IsNullOrEmpty(_statelessSessionSlotKey))
-					_statelessSessionSlotKey = string.Format("nh.facility.stacks.{0}", Guid.NewGuid());
-				return _statelessSessionSlotKey;
-			}
+			get { return _statelessSessionSlotKey; }
 		}
-		
-		private string slotKey;
-		private string _statelessSessionSlotKey;
 
 		/// <summary>
 		/// Gets the stack of <see cref="SessionDelegate"/> objects for the specified <paramref name="alias"/>.
